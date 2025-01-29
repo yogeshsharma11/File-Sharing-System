@@ -22,8 +22,8 @@ A simple and efficient file sharing system built with Django and Tailwind CSS th
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/project-name.git
-cd project-name
+git clone https://github.com/yogeshsharma11/File-Sharing-System.git
+cd File-Sharing-System
 ```
 
 2. Create and activate virtual environment
