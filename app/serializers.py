@@ -25,24 +25,23 @@ class FileListSerializer(serializers.Serializer):
     def create(self, validated_data):
         folder = Folder.objects.create()
         files = validated_data.pop('files')
-        
-        # Create temporary folder to store files for zipping
+      
         temp_folder_path = f'public/static/{folder.uid}'
         
         try:
-            # Save files temporarily
+           
             self.save_files_to_temp(files, temp_folder_path)
             
-            # Create zip file
+            
             zip_path = f'public/static/zip{folder.uid}'
             shutil.make_archive(zip_path, 'zip', temp_folder_path)
             
-            # Clean up temporary files
+            
             self.cleanup_temp_files(temp_folder_path)
             
             return {'folder': str(folder.uid)}
         except Exception as e:
-            # Clean up in case of error
+     
             self.cleanup_temp_files(temp_folder_path)
             if os.path.exists(f'{zip_path}.zip'):
                 os.remove(f'{zip_path}.zip')
