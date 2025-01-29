@@ -16,7 +16,6 @@ A simple and efficient file sharing system built with Django and Tailwind CSS th
 - Django 
 - Django REST Framework
 - Tailwind CSS
-- Axios
 - Python
 
 ## Installation and Setup
