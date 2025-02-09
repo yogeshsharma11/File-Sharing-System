@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from .serializers import FileListSerializer
 from rest_framework.parsers import MultiPartParser
 from django.contrib.auth import logout
+from .models import Folder
 
 def login_view(request):
     if request.method == 'POST':
@@ -54,6 +55,19 @@ def home(request):
 def download(request, uid):
     return render(request, 'download.html', context={'uid': uid})
 
+@login_required(login_url='login')
+def my_files(request):
+    if request.method == 'POST' and request.POST.get('delete'):
+        folder_uid = request.POST.get('delete')
+        folder = Folder.objects.filter(uid=folder_uid, user=request.user).first()
+        if folder:
+            folder.delete()
+            messages.success(request, 'File deleted successfully')
+        return redirect('my_files')
+
+    folders = Folder.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'my_files.html', {'folders': folders})
+
 class HandleFileUpload(APIView):
     parser_classes = [MultiPartParser]
     
@@ -71,8 +85,7 @@ class HandleFileUpload(APIView):
                     'message': 'No files were uploaded'
                 }, status=400)
 
-            data = request.data
-            serializer = FileListSerializer(data=data, context={'user': request.user})
+            serializer = FileListSerializer(data=request.data, context={'user': request.user})
 
             if serializer.is_valid():
                 result = serializer.save()
@@ -84,13 +97,13 @@ class HandleFileUpload(APIView):
             
             return Response({
                 'status': 400,
-                'message': 'Invalid file upload',
+                'message': 'Invalid data',
                 'errors': serializer.errors
             }, status=400)
-
+            
         except Exception as e:
-            print(f"Upload error: {str(e)}")  # For debugging
             return Response({
                 'status': 500,
-                'message': f'An error occurred: {str(e)}',
+                'message': 'An error occurred',
+                'error': str(e)
             }, status=500)

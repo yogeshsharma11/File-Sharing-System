@@ -11,6 +11,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('download/<uid>/', views.download, name='download'),
     path('api/upload/', views.HandleFileUpload.as_view(), name='file-upload'),
+    path('my-files/', views.my_files, name='my_files'),
 ]
 
 if settings.DEBUG:

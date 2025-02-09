@@ -7,6 +7,7 @@ class FileListSerializer(serializers.Serializer):
     files = serializers.ListField(
         child = serializers.FileField(max_length = 10000, allow_empty_file= False, use_url = False)
     )
+    name = serializers.CharField(max_length=255, required=False)
     
     def save_files_to_temp(self, files, folder_path):
         """Temporarily save files to create zip"""
@@ -24,7 +25,8 @@ class FileListSerializer(serializers.Serializer):
     
     def create(self, validated_data):
         user = self.context.get('user')
-        folder = Folder.objects.create(user=user)
+        name = validated_data.get('name', 'Untitled Upload')
+        folder = Folder.objects.create(user=user, name=name)
         files = validated_data.pop('files')
       
         temp_folder_path = f'public/static/{folder.uid}'
