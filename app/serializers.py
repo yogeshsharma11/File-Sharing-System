@@ -23,7 +23,8 @@ class FileListSerializer(serializers.Serializer):
             shutil.rmtree(folder_path)
     
     def create(self, validated_data):
-        folder = Folder.objects.create()
+        user = self.context.get('user')
+        folder = Folder.objects.create(user=user)
         files = validated_data.pop('files')
       
         temp_folder_path = f'public/static/{folder.uid}'

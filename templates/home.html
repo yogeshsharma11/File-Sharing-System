@@ -8,11 +8,31 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
+    {% csrf_token %}
     <div class="min-h-screen flex items-center justify-center p-4">
         <div class="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold text-gray-800">Share Your Files</h1>
                 <p class="text-gray-600 mt-2">Upload multiple files and get a shareable link</p>
+            </div>
+
+            <div class="absolute top-4 right-4 flex items-center space-x-4">
+                <span class="text-gray-600">Welcome, {{ request.user.username }}</span>
+                <a href="{% url 'logout' %}" class="text-red-600 hover:text-red-700">Logout</a>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">Download Files</h2>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <input type="text" 
+                           id="download-link" 
+                           placeholder="Paste download link here" 
+                           class="w-full p-2 border rounded mb-2">
+                    <button onclick="handleDownload()" 
+                            class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                        Go to Download
+                    </button>
+                </div>
             </div>
 
             <div class="mb-8">
@@ -101,6 +121,10 @@
             updateFileList();
         }
 
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+
         function uploadFiles() {
             if (selectedFiles.length === 0) {
                 alert('Please select files to upload');
@@ -123,7 +147,8 @@
 
             axios.post('/api/upload/', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'X-CSRFToken': getCSRFToken()
                 },
                 onUploadProgress: (progressEvent) => {
                     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -138,13 +163,15 @@
                     document.getElementById('share-section').classList.remove('hidden');
                     uploadText.textContent = 'Upload complete!';
                     uploadText.classList.add('text-green-600');
-                    // Clear selected files after successful upload
                     selectedFiles = [];
                     updateFileList();
+                } else {
+                    throw new Error(response.data.message || 'Upload failed');
                 }
             })
             .catch(error => {
-                uploadText.textContent = 'Upload failed. Please try again.';
+                console.error('Upload error:', error);
+                uploadText.textContent = error.response?.data?.message || 'Upload failed. Please try again.';
                 uploadText.classList.add('text-red-600');
                 uploadBtn.disabled = false;
                 uploadBtn.classList.remove('opacity-50');
@@ -162,6 +189,16 @@
             setTimeout(() => {
                 copyBtn.textContent = originalText;
             }, 2000);
+        }
+
+        function handleDownload() {
+            const link = document.getElementById('download-link').value;
+            if (link) {
+                const uid = link.split('/').filter(Boolean).pop();
+                window.location.href = `/download/${uid}/`;
+            } else {
+                alert('Please enter a valid download link');
+            }
         }
     </script>
 </body>
