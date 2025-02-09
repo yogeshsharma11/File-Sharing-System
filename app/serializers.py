@@ -28,21 +28,14 @@ class FileListSerializer(serializers.Serializer):
         files = validated_data.pop('files')
       
         temp_folder_path = f'public/static/{folder.uid}'
+        zip_path = f'public/static/zip{folder.uid}'
         
         try:
-           
             self.save_files_to_temp(files, temp_folder_path)
-            
-            
-            zip_path = f'public/static/zip{folder.uid}'
             shutil.make_archive(zip_path, 'zip', temp_folder_path)
-            
-            
             self.cleanup_temp_files(temp_folder_path)
-            
-            return {'folder': str(folder.uid)}
+            return {'folder': folder.uid}
         except Exception as e:
-     
             self.cleanup_temp_files(temp_folder_path)
             if os.path.exists(f'{zip_path}.zip'):
                 os.remove(f'{zip_path}.zip')

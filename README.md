@@ -11,6 +11,16 @@ A simple and efficient file sharing system built with Django and Tailwind CSS th
 - 🔄 Real-time upload progress
 - 📋 One-click link copying
 
+## Security Features
+
+- User Authentication Required for Uploads
+- Secure File Handling
+- Automatic File Cleanup
+- Short UIDs for Privacy
+- CSRF Protection
+- Protected Download Links
+
+
 ## Tech Stack
 
 - Django 
@@ -69,20 +79,29 @@ Visit `http://127.0.0.1:8000` to start using the application.
 ## Project Structure
 
 ```
-project_name/
-├── public/
-│   └── static/
-├── app_name/
+File-Sharing-System/
+├── app/
+│   ├── migrations/
+│   │   └── __init__.py
+│   ├── management/
+│   │   └── commands/
+│   │       └── cleanup_folders.py
 │   ├── models.py
 │   ├── views.py
 │   ├── urls.py
 │   └── serializers.py
-├── templates/
-│   ├── home.html
-│   └── download.html
-├── manage.py
-└── requirements.txt
+├── Fileshare/
+│   
 ```
+
+## Security Features
+
+- User Authentication Required for Uploads
+- Secure File Handling
+- Automatic File Cleanup
+- Short UIDs for Privacy
+- CSRF Protection
+- Protected Download Links
 
 ## Contributing
 
