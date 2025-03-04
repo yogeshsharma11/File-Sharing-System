@@ -1,99 +1,148 @@
 {% extends 'base.html' %}
 
-{% block title %}My Files - File Share{% endblock %}
+{% block title %}My Files - FileShare{% endblock %}
 
-{% block content %}
-<div class="max-w-6xl mx-auto">
-    <div class="bg-white rounded-xl shadow-lg p-8">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">My Files</h1>
-            <p class="text-gray-600 mt-2">Manage your uploaded files</p>
-        </div>
-
-        {% if folders %}
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Created Date
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Download Link
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        {% for folder in folders %}
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ folder.name|default:"Untitled Upload" }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ folder.created_at }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center space-x-2">
-                                        <input type="text" 
-                                               value="{{ request.scheme }}://{{ request.get_host }}{{ folder.get_download_url }}" 
-                                               class="flex-1 p-2 border rounded text-sm" 
-                                               readonly>
-                                        <button onclick="copyLink(this)" 
-                                                class="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200">
-                                            Copy
-                                        </button>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <form method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this file?');">
-                                        {% csrf_token %}
-                                        <button type="submit" 
-                                                name="delete" 
-                                                value="{{ folder.uid }}" 
-                                                class="text-red-600 hover:text-red-900">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <div class="text-center py-8 text-gray-500">
-                <p>You haven't uploaded any files yet.</p>
-                <a href="{% url 'home' %}" class="text-blue-600 hover:text-blue-700 mt-2 inline-block">
-                    Upload your first file
-                </a>
-            </div>
-        {% endif %}
-    </div>
-</div>
+{% block extra_head %}
+<style>
+    .file-card {
+        animation: fadeIn 0.5s ease-out;
+        transition: all 0.3s ease;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .file-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        border-color: rgba(79, 70, 229, 0.3);
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .empty-state {
+        animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    .action-button {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    .action-button:hover {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(124, 58, 237, 0.2));
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    .file-icon {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+</style>
 {% endblock %}
 
-{% block extra_scripts %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold gradient-text mb-4">My Files</h1>
+        <p class="text-gray-400 text-lg">Manage your uploaded files</p>
+    </div>
+
+    {% if folders %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for folder in folders %}
+            <div class="file-card rounded-xl p-6 backdrop-blur-lg">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="file-icon text-3xl p-3 rounded-lg bg-opacity-10">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-100">
+                                {% if folder.name %}{{ folder.name }}{% else %}Untitled Upload{% endif %}
+                            </h3>
+                            <p class="text-sm text-gray-400">{{ folder.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="copyToClipboard('{{ request.scheme }}://{{ request.get_host }}/download/{{ folder.uid }}/')"
+                                class="action-button p-2 rounded-lg group">
+                            <i class="fas fa-copy text-blue-400 group-hover:text-blue-300"></i>
+                        </button>
+                        <form method="post" action="{% url 'my_files' %}" class="inline" onsubmit="return confirm('Are you sure you want to delete this file?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete" value="{{ folder.uid }}">
+                            <button type="submit" class="action-button p-2 rounded-lg group">
+                                <i class="fas fa-trash-alt text-red-400 group-hover:text-red-300"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-400">
+                            <i class="fas fa-file mr-1"></i> {{ folder.file_count }} file{% if folder.file_count != 1 %}s{% endif %}
+                        </div>
+                        <a href="/download/{{ folder.uid }}/" 
+                           class="action-button px-4 py-2 rounded-lg inline-flex items-center space-x-2 hover:text-blue-300 text-blue-400">
+                            <span>Download</span>
+                            <i class="fas fa-download ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-16">
+            <div class="empty-state mb-6">
+                <div class="file-icon text-6xl mb-4">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+            </div>
+            <h3 class="text-2xl font-medium text-gray-300 mb-2">No Files Yet</h3>
+            <p class="text-gray-400 mb-6">Upload your first file to get started</p>
+            <a href="{% url 'home' %}" 
+               class="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <i class="fas fa-cloud-upload-alt text-xl"></i>
+                <span class="text-lg">Upload Files</span>
+            </a>
+        </div>
+    {% endif %}
+</div>
+
 <script>
-function copyLink(button) {
-    const input = button.parentElement.querySelector('input');
-    input.select();
-    document.execCommand('copy');
-    
-    const originalText = button.textContent;
-    button.textContent = 'Copied!';
-    button.classList.add('bg-green-100', 'text-green-600');
-    
-    setTimeout(() => {
-        button.textContent = originalText;
-        button.classList.remove('bg-green-100', 'text-green-600');
-        button.classList.add('bg-blue-100', 'text-blue-600');
-    }, 2000);
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Create and show a toast notification
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 fade-in';
+        toast.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <span>Link copied to clipboard!</span>
+        `;
+        document.body.appendChild(toast);
+        
+        // Remove the toast after 3 seconds
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
 }
 </script>
 {% endblock %} 

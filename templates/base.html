@@ -5,30 +5,252 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}File Share{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Base background with gradient */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* Floating orbs effect */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.2;
+            animation: float 20s infinite;
+            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.4), rgba(99, 102, 241, 0.1));
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            left: -100px;
+            animation-delay: -2s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            right: -50px;
+            animation-delay: -5s;
+            background: radial-gradient(circle at center, rgba(99, 102, 241, 0.4), rgba(59, 130, 246, 0.1));
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            bottom: -50px;
+            left: 30%;
+            animation-delay: -8s;
+            background: radial-gradient(circle at center, rgba(79, 70, 229, 0.4), rgba(99, 102, 241, 0.1));
+        }
+
+        /* Grid pattern overlay */
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        /* Shooting stars effect */
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.5), transparent);
+            animation: shootingStar 4s linear infinite;
+        }
+
+        .star-1 { top: 20%; animation-delay: 0s; }
+        .star-2 { top: 40%; animation-delay: -1s; }
+        .star-3 { top: 60%; animation-delay: -2s; }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(50px, 50px);
+            }
+            50% {
+                transform: translate(0, 100px);
+            }
+            75% {
+                transform: translate(-50px, 50px);
+            }
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(50px);
+            }
+        }
+
+        @keyframes shootingStar {
+            0% {
+                transform: translateX(-100%) translateY(0);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(200%) translateY(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Existing styles */
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .nav-link:hover {
+            transform: translateY(-1px);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .glass-effect {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .content-section {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .content-section:hover {
+            box-shadow: 0 8px 12px -1px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        .glow-effect {
+            position: relative;
+        }
+        .glow-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        .glow-effect:hover::before {
+            opacity: 0.1;
+        }
+    </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-50">
+<body class="text-gray-100">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <!-- Grid Pattern -->
+        <div class="grid-pattern"></div>
+        
+        <!-- Floating Orbs -->
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        
+        <!-- Shooting Stars -->
+        <div class="shooting-star star-1"></div>
+        <div class="shooting-star star-2"></div>
+        <div class="shooting-star star-3"></div>
+    </div>
+
     <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
+    <nav class="glass-effect sticky top-0 z-40 border-b border-blue-900/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="{% url 'home' %}" class="text-xl font-bold text-blue-600">FileShare</a>
+                <div class="flex items-center space-x-8">
+                    <a href="{% url 'home' %}" class="text-2xl font-bold gradient-text">FileShare</a>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="{% url 'home' %}" class="nav-link text-gray-100 hover:text-white">
+                            <i class="fas fa-home mr-2"></i> Home
+                        </a>
+                        {% if request.user.is_authenticated %}
+                        <a href="{% url 'my_files' %}" class="nav-link text-gray-100 hover:text-white">
+                            <i class="fas fa-folder mr-2"></i> My Files
+                        </a>
+                        {% endif %}
                     </div>
-                    {% if request.user.is_authenticated %}
-                    <div class="ml-6 flex items-center">
-                        <a href="{% url 'my_files' %}" class="text-gray-600 hover:text-gray-900">My Files</a>
-                    </div>
-                    {% endif %}
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center space-x-6">
                     {% if request.user.is_authenticated %}
-                        <span class="text-gray-600 mr-4">Welcome, {{ request.user.username }}</span>
-                        <a href="{% url 'logout' %}" class="text-red-600 hover:text-red-700">Logout</a>
+                        <span class="text-blue-200">Welcome, {{ request.user.username }}</span>
+                        <a href="{% url 'logout' %}" class="nav-link text-red-400 hover:text-red-300">
+                            <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                        </a>
                     {% else %}
-                        <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-700 mr-4">Login</a>
-                        <a href="{% url 'signup' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Sign Up</a>
+                        <a href="{% url 'login' %}" class="nav-link text-gray-100 hover:text-white">
+                            <i class="fas fa-sign-in-alt mr-1"></i> Login
+                        </a>
+                        <a href="{% url 'signup' %}" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25">
+                            <i class="fas fa-user-plus mr-1"></i> Sign Up
+                        </a>
                     {% endif %}
                 </div>
             </div>
@@ -39,7 +261,7 @@
     {% if messages %}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
             {% for message in messages %}
-                <div class="rounded-md p-4 mb-4 {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                <div class="rounded-lg p-4 mb-4 fade-in glass-effect {% if message.tags == 'error' %}border-red-500/20 text-red-400{% else %}border-green-500/20 text-green-400{% endif %}">
                     {{ message }}
                 </div>
             {% endfor %}
@@ -47,7 +269,7 @@
     {% endif %}
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 fade-in">
         {% block content %}{% endblock %}
     </main>
 

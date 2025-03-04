@@ -1,57 +1,115 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - File Share</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800">Sign Up</h1>
-                <p class="text-gray-600 mt-2">Create your File Share account</p>
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - FileShare{% endblock %}
+
+{% block extra_head %}
+<style>
+    .auth-card {
+        animation: slideUp 0.5s ease-out;
+    }
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .input-field {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    .input-field:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    .auth-button {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        transition: all 0.3s ease;
+    }
+    .auth-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4">
+    <div class="auth-card glass-effect rounded-2xl p-8 backdrop-blur-lg">
+        <div class="text-center mb-8">
+            <div class="text-purple-400 mb-4">
+                <i class="fas fa-user-plus text-5xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">Create Account</h1>
+            <p class="text-gray-400">Join our community today</p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    <input type="text" name="username" id="username" required
+                           class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                           placeholder="Choose a username">
+                </div>
             </div>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="mb-4 p-4 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            <form method="POST" action="{% url 'signup' %}" class="space-y-6">
-                {% csrf_token %}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Username</label>
-                    <input type="text" name="username" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <i class="fas fa-envelope"></i>
+                    </span>
+                    <input type="email" name="email" id="email" required
+                           class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                           placeholder="Enter your email">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" name="password1" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                    <input type="password" name="password2" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Sign Up
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600">
-                    Already have an account? 
-                    <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-700">Login</a>
-                </p>
             </div>
+
+            <div>
+                <label for="password1" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" name="password1" id="password1" required
+                           class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                           placeholder="Create a password">
+                </div>
+            </div>
+
+            <div>
+                <label for="password2" class="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" name="password2" id="password2" required
+                           class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                           placeholder="Confirm your password">
+                </div>
+            </div>
+
+            <button type="submit" 
+                    class="auth-button w-full py-3 rounded-lg text-white font-medium text-lg">
+                Create Account
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-gray-400">
+                Already have an account? 
+                <a href="{% url 'login' %}" class="text-blue-400 hover:text-blue-300 transition-colors">Sign in</a>
+            </p>
         </div>
     </div>
-</body>
-</html> 
+</div>
+{% endblock %} 
