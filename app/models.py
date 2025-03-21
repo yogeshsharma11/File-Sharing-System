@@ -39,3 +39,16 @@ class Files(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/')
     created_at = models.DateField(auto_now=True)
+
+class OTP(models.Model):
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.email} - {self.otp}"
+
+    class Meta:
+        verbose_name = "OTP"
+        verbose_name_plural = "OTPs"

@@ -48,6 +48,14 @@
             <p class="text-gray-400">Sign in to your account</p>
         </div>
 
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <form method="post" class="space-y-6">
             {% csrf_token %}
             <div>
@@ -56,7 +64,10 @@
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                         <i class="fas fa-user"></i>
                     </span>
-                    <input type="text" name="username" id="username" required
+                    <input type="text" 
+                           name="username" 
+                           id="username" 
+                           required
                            class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                            placeholder="Enter your username">
                 </div>
@@ -68,9 +79,17 @@
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                         <i class="fas fa-lock"></i>
                     </span>
-                    <input type="password" name="password" id="password" required
+                    <input type="password" 
+                           name="password" 
+                           id="password" 
+                           required
                            class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                            placeholder="Enter your password">
+                </div>
+                <div class="mt-1 text-right">
+                    <a href="{% url 'forgot_password' %}" class="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                        Forgot Password?
+                    </a>
                 </div>
             </div>
 

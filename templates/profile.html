@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - FileShare{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="glass-effect rounded-2xl p-8 backdrop-blur-lg">
+        <div class="text-center mb-8">
+            <div class="text-purple-400 mb-4">
+                <i class="fas fa-user-circle text-5xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">Profile Settings</h1>
+            <p class="text-gray-400">Manage your account settings</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="space-y-6">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-200 mb-4">Account Information</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400">Username</label>
+                        <p class="mt-1 text-gray-200">{{ user.username }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400">Email</label>
+                        <p class="mt-1 text-gray-200">{{ user.email }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400">Date Joined</label>
+                        <p class="mt-1 text-gray-200">{{ user.date_joined|date:"F j, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-red-900/20 rounded-lg p-6 border border-red-500/20">
+                <h2 class="text-xl font-semibold text-red-400 mb-4">Danger Zone</h2>
+                <p class="text-gray-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+                
+                <form method="POST" action="{% url 'delete_account' %}" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-400">Confirm Password</label>
+                        <div class="mt-1">
+                            <input type="password" 
+                                   name="password" 
+                                   id="password" 
+                                   required
+                                   class="input-field w-full pl-4 pr-4 py-3 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                   placeholder="Enter your password to confirm">
+                        </div>
+                    </div>
+                    <button type="submit" 
+                            class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors">
+                        Delete Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
