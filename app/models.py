@@ -32,8 +32,8 @@ class Folder(models.Model):
             os.remove(f"{zip_path}.zip")
         super().delete(*args, **kwargs)
 
-def get_uploade_path(instance, filename):
-    return os.path.join(str(instance.folder.uid), filename) 
+def get_upload_path(instance, filename):
+    return os.path.join(str(instance.folder.uid), filename)
 
 class Files(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
