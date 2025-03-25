@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,10 +44,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'rest_framework',
+    'whitenoise.runserver_nostatic',  # Add whitenoise
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add whitenoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,16 +82,12 @@ WSGI_APPLICATION = 'Fileshare.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', 'fileshare_db'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
+
 
 
 # Password validation
@@ -127,15 +125,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'public/static')
 ]
 
-MEDIA_ROOT =  os.path.join(BASE_DIR, 'public/static') 
+# Whitenoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public/static')
 MEDIA_URL = '/media/'
+
+
+SECURE_SSL_REDIRECT = bool(os.getenv('SECURE_SSL_REDIRECT', 'True') == 'True')
+SESSION_COOKIE_SECURE = bool(os.getenv('SESSION_COOKIE_SECURE', 'True') == 'True')
+CSRF_COOKIE_SECURE = bool(os.getenv('CSRF_COOKIE_SECURE', 'True') == 'True')
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -145,3 +149,15 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'karansharma70249@gmail.com'  # Add your Gmail address
 EMAIL_HOST_PASSWORD = 'nmvd awns sitp fqvf'  # Add your Gmail app password
 DEFAULT_FROM_EMAIL = 'File Share System <karansharma70249@gmail.com>'
+
+# Add these settings for better performance
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.render.com',
+    'https://<your-app-name>.onrender.com',
+    'http://localhost:8000',
+]

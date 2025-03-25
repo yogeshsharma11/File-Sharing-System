@@ -10,6 +10,7 @@ certifi==2025.1.31
 cffi==1.17.1
 charset-normalizer==3.4.1
 cryptography==44.0.0
+dj-database-url==2.3.0
 Django==5.1.5
 django-allauth==65.4.1
 django-cors-headers==4.3.1
@@ -30,6 +31,7 @@ google-resumable-media==2.7.2
 googleapis-common-protos==1.66.0
 grpcio==1.70.0
 grpcio-status==1.70.0
+gunicorn==21.2.0
 httplib2==0.22.0
 idna==3.10
 msgpack==1.1.0
@@ -37,6 +39,7 @@ multidict==6.1.0
 propcache==0.2.1
 proto-plus==1.26.0
 protobuf==5.29.3
+psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycparser==2.22
@@ -49,8 +52,9 @@ requests==2.32.3
 rsa==4.9
 sqlparse==0.5.3
 twilio==9.4.5
+typing_extensions==4.12.2
 tzdata==2025.1
 uritemplate==4.1.1
 urllib3==2.3.0
+whitenoise==6.6.0
 yarl==1.18.3
-gunicorn
